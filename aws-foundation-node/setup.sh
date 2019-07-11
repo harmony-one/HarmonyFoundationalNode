@@ -8,5 +8,5 @@ sudo apt update \
 mkdir -p ~/.hmy/keystore
 
 # Download Harmony Scripts
-wget https://harmony.one/wallet.sh && chmod u+x wallet.sh
+wget https://harmony.one/wallet.sh && chmod u+x wallet.sh && ./wallet.sh -d
 wget https://harmony.one/node.sh && chmod u+x node.sh
