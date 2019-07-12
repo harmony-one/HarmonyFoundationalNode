@@ -18,7 +18,7 @@ resource "aws_key_pair" "auth" {
 
 resource "aws_instance" "foundation-node" {
   ami           =  "${data.aws_ami.fn-node.id}"
-  instance_type = "m5.large"
+  instance_type = "${var.node_instance_type}"
   vpc_security_group_ids = ["${aws_security_group.foundational-sg.id}"]
   key_name = "harmony-node"
   
