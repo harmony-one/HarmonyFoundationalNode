@@ -58,7 +58,7 @@ resource "aws_instance" "foundation-node" {
     }
   }
   provisioner "local-exec" {
-     command = "echo ${aws_instance.foundation-node.public_ip} >> instance-ip.txt"
+     command = "echo ${aws_instance.foundation-node.*.public_ip} >> instance-ip.txt"
   }
 
   root_block_device  {

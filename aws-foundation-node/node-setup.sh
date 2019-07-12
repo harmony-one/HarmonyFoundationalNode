@@ -16,6 +16,7 @@ function input_user_access_keys
     read AWS_SECRET_ACCESS_KEY
 
     #storing it to aws configure to make it easy to destroy 
+    echo "" >> ~/.aws/credentials
     echo "[profile harmony-foundational]" >> ~/.aws/credentials
     echo "aws_access_key_id = "$AWS_ACCESS_KEY"#harmony-node" >> ~/.aws/credentials
     echo "aws_secret_access_key ="$AWS_SECRET_ACCESS_KEY"#harmony-node" >> ~/.aws/credentials
@@ -40,7 +41,7 @@ function provision_terraform
 
 function instance_login
 {   
-    INSTANCE_IP=${cat instance_ip.txt}
+    INSTANCE_IP=${cat instance-ip.txt}
     echo "Your IP is: "$INSTANCE_IP
     ssh -i keys/harmony-foundation.pem ec2-user@$INSTANCE_IP
 }
