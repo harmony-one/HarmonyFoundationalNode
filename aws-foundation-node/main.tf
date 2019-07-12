@@ -1,5 +1,6 @@
 provider "aws" {
   region     =  var.aws_region
+  shared_credentials_file = "~/.aws/credentials"
   profile    = "harmony-foundational"
 }
 
@@ -57,9 +58,6 @@ resource "aws_instance" "foundation-node" {
       agent = true
     }
   }
-  provisioner "local-exec" {
-     command = "echo ${aws_instance.foundation-node.*.public_ip} >> instance-ip.txt"
-  }
 
   root_block_device  {
     volume_type = "gp2"
@@ -76,3 +74,4 @@ resource "aws_instance" "foundation-node" {
     Project = "Harmony"
   }
 }
+
