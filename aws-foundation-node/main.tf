@@ -35,7 +35,7 @@ resource "aws_instance" "foundation-node" {
     }
   }
   provisioner "file" {
-    source = "key-folder"
+    source = "key-folder/"
     destination = "/home/ec2-user"
     connection {
       host = self.public_ip

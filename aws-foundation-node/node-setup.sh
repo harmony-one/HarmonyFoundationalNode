@@ -5,22 +5,33 @@ REGION=""
 INSTANCE_IP=""
 KEYS=""
 
-function input_user_access_keys
+function setup_aws_keys
 {
-    #Need check-if-exists logic, so that you don't ask again.
-    echo "Enter the geography where you want to run the instance: us-west-1, us-east-1 etc:"
-    read REGION
     echo "Enter your AWS ACCESS KEY"
     read AWS_ACCESS_KEY
     echo "You entered: "$AWS_ACCESS_KEY
     echo "Enter your AWS SECRET ACCESS KEY"
     read AWS_SECRET_ACCESS_KEY
-
     #storing it to aws configure to make it easy to destroy 
     echo "" >> ~/.aws/credentials
     echo "[profile harmony-foundational]" >> ~/.aws/credentials
-    echo "aws_access_key_id = "$AWS_ACCESS_KEY" #harmony-node" >> ~/.aws/credentials
-    echo "aws_secret_access_key ="$AWS_SECRET_ACCESS_KEY" #harmony-node" >> ~/.aws/credentials
+    echo "aws_access_key_id = "$AWS_ACCESS_KEY" " >> ~/.aws/credentials
+    echo "aws_secret_access_key = "$AWS_SECRET_ACCESS_KEY" " >> ~/.aws/credentials
+}
+
+function input_user_access_keys
+{
+    #Need check-if-exists logic, so that you don't ask again.
+    echo "Enter the geography where you want to run the instance: us-west-1, us-east-1 etc:"
+    read REGION
+    echo "Have you entered your aws access key already [y/n]?"
+    read AWSYES
+    case $AWSYES in 
+        yY][eE][sS]|[yY])
+        echo "We will use credentials file from ~/.aws/credentials" ;;
+        nN][oO]|[nN])
+        setup_aws_keys ;;
+    esac
 }
 
 function generate_new_keys
@@ -56,10 +67,9 @@ function provision_terraform
 {   
     echo "Setting up your AWS INSTANCE ..."
     region='aws_region='$REGION
-    export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY
-    export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-    terraform apply -var=$region
+    terraform apply -var=$region -auto-approve
     rm -f local_config.txt
+    terraform output ip
     terraform output ip | grep -E -o "([0-9]{1,3}[\.]){3}[0-9]{1,3}" >> local_config.txt
     INSTANCE_IP=$(head -n 1 local_config.txt)
     echo "Your IP is: "$INSTANCE_IP
@@ -72,6 +82,9 @@ function instance_login
     INSTANCE_IP=$(head -n 1 local_config.txt)
     KEYS=$(head -2 local_config.txt | tail -1)
     target="ec2-user@"$INSTANCE_IP
+    echo "Running a Node on Remote Server.."
+    sleep 2
+    ssh -t -i  $KEYS $target 'tmux new  -d -s nodeRun "~/node.sh -S -t -p empty.txt"'
     ssh -i $KEYS $target
 }
 
@@ -83,9 +96,14 @@ function create
    instance_login  
 }
 
+function launch 
+{
+    create
+}
+
 function destroy
 {
-    terraform destroy 
+    terraform destroy -auto-approve
 }
 
 ACTION=$1
