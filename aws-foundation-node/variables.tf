@@ -23,3 +23,4 @@ variable "aws_region" {
   description = "Region user wants to run node instance in"
   default = "us-west-1"
 }
+
